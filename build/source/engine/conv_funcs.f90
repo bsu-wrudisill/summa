@@ -23,7 +23,7 @@ USE nrtype                                 ! variable types
 USE multiconst                             ! fixed parameters (lh vapzn, etc.)
 implicit none
 private
-public::RELHM2SPHM,SPHM2RELHM,WETBULBTMP,satVapPress,vapPress,getLatentHeatValue
+public::RELHM2SPHM,SPHM2RELHM,WETBULBTMP,satVapPress,satVapPressIce,vapPress,getLatentHeatValue
 contains
 
 ! ----------------------------------------------------------------------
@@ -115,7 +115,7 @@ logical(lgt),parameter          :: testDeriv=.false. ! flag to test the derivati
 
 !SVP     = SATVPFRZ * EXP( (X1*TC)/(X2 + TC) ) ! Saturated Vapour Press (Pa)
 ! t is in C
-SVP = 1000._rkind * EXP(43.494_rkind - 6545.8_rkind/(TC + 278._rkind)) / (TC + 868._rkind)**2  ! SVP in Pa
+SVP = EXP(43.494_rkind - 6545.8_rkind/(TC + 278._rkind)) / (TC + 868._rkind)**2  ! SVP in Pa
 
 ! Compute derivative dSVP_dT analytically
 dSVP_dT = SVP * ( &
@@ -405,9 +405,9 @@ END FUNCTION SATVPRESS
 FUNCTION SATVPRESSICE(TCEL)
 IMPLICIT NONE
 real(rkind),INTENT(IN) :: TCEL      ! Temperature (C)
-real(rkind)            :: SATVPRESS ! Saturated vapor pressure (Pa)
+real(rkind)            :: SATVPRESSICE ! Saturated vapor pressure (Pa)
 !SATVPRESS = SATVPFRZ * EXP( (17.27_rkind*TCEL)/(237.30_rkind + TCEL) ) ! Saturated Vapour Press (Pa)
-SATVPRESS = 1000._rkind * EXP(43.494_rkind - 6545.8_rkind/(TCEL + 278._rkind)) / (TCEL + 868._rkind)**2  ! SVP in Pa
+SATVPRESSICE = EXP(43.494_rkind - 6545.8_rkind/(TCEL + 278._rkind)) / (TCEL + 868._rkind)**2  ! SVP in Pa
 END FUNCTION SATVPRESSICE
 
 

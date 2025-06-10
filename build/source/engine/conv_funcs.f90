@@ -92,6 +92,44 @@ if(testDeriv) print*, 'dSVP_dT check... ', SVP, dSVP_dT, (SATVPRESS(TC+dx) - SVP
 END SUBROUTINE satVapPress
 
 
+
+! ***************************************************************************************************************
+! public subroutine satVapPressIce: Use Huang's formula to compute saturated vapor pressure over ice (Pa)
+! ***************************************************************************************************************
+! NOTE: temperature units are degC !!!!
+! ***************************************************************************************************************
+subroutine satVapPressIce(TC, SVP, dSVP_dT)
+IMPLICIT NONE
+! input
+real(rkind), intent(in)            :: TC       ! temperature (C)
+! output
+real(rkind), intent(out)           :: SVP      ! saturation vapor pressure (Pa)
+real(rkind), intent(out)           :: dSVP_dT  ! d(SVP)/dT
+
+! local (use to test derivative calculations)
+real(rkind),parameter              :: dx = 1.e-8_rkind     ! finite difference increment
+logical(lgt),parameter          :: testDeriv=.false. ! flag to test the derivative
+!---------------------------------------------------------------------------------------------------
+! Units note :              Pa = N m-2 = kg m-1 s-2
+! SATVPFRZ=     610.8       ! Saturation water vapour pressure at 273.16K (Pa)
+
+!SVP     = SATVPFRZ * EXP( (X1*TC)/(X2 + TC) ) ! Saturated Vapour Press (Pa)
+! t is in C
+SVP = 1000._rkind * EXP(43.494_rkind - 6545.8_rkind/(TC + 278._rkind)) / (TC + 868._rkind)**2  ! SVP in Pa
+
+! Compute derivative dSVP_dT analytically
+dSVP_dT = SVP * ( &
+        6545.8_rkind / (TC + 278._rkind)**2 &
+        - 2._rkind / (TC + 868._rkind) )
+
+if(testDeriv) print*, 'dSVP_dT check... ', SVP, dSVP_dT, (SATVPRESSICE(TC+dx) - SVP)/dx
+
+
+END SUBROUTINE satVapPressIce
+
+
+
+
 ! ***************************************************************************************************************
 ! private function MSLP2AIRP: compute air pressure using mean sea level pressure and elevation
 ! ***************************************************************************************************************
@@ -362,6 +400,15 @@ real(rkind),INTENT(IN) :: TCEL      ! Temperature (C)
 real(rkind)            :: SATVPRESS ! Saturated vapor pressure (Pa)
 SATVPRESS = SATVPFRZ * EXP( (17.27_rkind*TCEL)/(237.30_rkind + TCEL) ) ! Saturated Vapour Press (Pa)
 END FUNCTION SATVPRESS
+
+
+FUNCTION SATVPRESSICE(TCEL)
+IMPLICIT NONE
+real(rkind),INTENT(IN) :: TCEL      ! Temperature (C)
+real(rkind)            :: SATVPRESS ! Saturated vapor pressure (Pa)
+!SATVPRESS = SATVPFRZ * EXP( (17.27_rkind*TCEL)/(237.30_rkind + TCEL) ) ! Saturated Vapour Press (Pa)
+SATVPRESS = 1000._rkind * EXP(43.494_rkind - 6545.8_rkind/(TCEL + 278._rkind)) / (TCEL + 868._rkind)**2  ! SVP in Pa
+END FUNCTION SATVPRESSICE
 
 
 end module conv_funcs_module

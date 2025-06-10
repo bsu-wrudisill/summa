@@ -198,6 +198,7 @@ contains
  USE expIntegral_module,only:expInt                               ! function to calculate the exponential integral
  ! conversion functions
  USE conv_funcs_module,only:satVapPress                           ! function to compute the saturated vapor pressure (Pa)
+ USE conv_funcs_module,only:satVapPressIce                        ! function to compute the saturated vapor pressure (Pa) w.r.t. ice 
  USE conv_funcs_module,only:getLatentHeatValue                    ! function to identify latent heat of vaporization/sublimation (J kg-1)
  ! stomatal resistance
  USE stomResist_module,only:stomResist                            ! subroutine to calculate stomatal resistance
@@ -1086,7 +1087,13 @@ contains
     ! compute the saturation vapor pressure for ground temperature
     ! NOTE: saturated vapor pressure derivatives don't seem that accurate....
     TG_celcius = groundTemp - Tfreeze
-    call satVapPress(TG_celcius, scalarSatVP_GroundTemp, dSVPGround_dGroundTemp)
+    if (TG_celcius >= 0._rkind) then
+      call satVapPress(TG_celcius, scalarSatVP_GroundTemp, dSVPGround_dGroundTemp)
+    else
+      call satVapPressIce(TG_celcius, scalarSatVP_GroundTemp, dSVPGround_dGroundTemp)
+    end if
+
+
 
     ! -------------------------------------------------------------------------------------
     ! calculation block (unperturbed fluxes returned [computed last])

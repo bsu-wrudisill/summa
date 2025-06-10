@@ -4,7 +4,7 @@
 #export LIBRARIES='-L/opt/homebrew/Cellar/netcdf-fortran/x.x.x/lib -lnetcdff -L/opt/homebrew/Cellar/lapack/x.x.x/lib -lblas -llapack'
 export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
-export F_MASTER='/Users/william/Documents/projects/summa/summa/'
+export F_MASTER='/Users/william/Documents/projects/summa_willfork/summa/'
 
 export CC='/opt/homebrew/bin/gcc-14'
 export CXX='/opt/homebrew/bin/g++-14'
